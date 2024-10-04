@@ -6,7 +6,9 @@ const helmet = require('helmet');
 const connectDB = require('./config/db');
 const documentRoutes = require('./routes/documentRoute');
 const { handleSocket } = require('./utils/socketHandler');
-const errorHandler = require('./middleware/errorHandler'); // Importa o middleware de erro
+const errorHandler = require('./middleware/errorHandler');
+const cors = require('cors');
+
 
 require('dotenv').config();
 
@@ -14,10 +16,20 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
+
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true,
+}));
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
   },
 });
 
