@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { theme } from "../styles/theme";
+import Texture from '../assets/images/texture.jpg'
+
 
 export const HomeWrapper = styled.div`
   display: flex;
@@ -10,7 +12,9 @@ export const HomeWrapper = styled.div`
   background: ${theme.gradients.background};
   color: ${theme.colors.textPrimary};
   min-height: 100vh;
-  background: ${theme.gradients.background}, url('/assets/texture.png') repeat;
+  background-image: url(${Texture});
+  background-size: cover;
+  background-position: 100%;
 `;
 
 export const Card = styled.div`

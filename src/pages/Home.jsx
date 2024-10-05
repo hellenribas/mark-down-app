@@ -1,11 +1,12 @@
 // Home.js
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import BackgroundImage from 'react-background-image';
+import { io } from 'socket.io-client';
+
+import * as S from './HomeStyles';
 
 import Header from '../components/Header/Header';
 import Editor from '../components/Editor/Editor';
-
-import * as S from './HomeStyles';
-import { io } from 'socket.io-client';
 import UserIndicators from '../components/UserIndicator/UserIndicator';
 
 const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
@@ -64,7 +65,8 @@ useEffect(() => {
 }, []);
 
   return (
-    <S.HomeWrapper>
+    <S.HomeWrapper 
+  >
       <Header />
       <S.Card>
       <UserIndicators users={Array.from(activeUsers.values())} />

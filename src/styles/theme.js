@@ -3,7 +3,7 @@ export const theme = {
     primary: '#1E1E1E',           // Fundo principal escuro
     secondary: '#61DAFB',          // Destaque
     editorBackground: '#282C34',   // Fundo do editor
-    cardBackground: '#2D2F33',     // Fundo dos "cartões"
+    cardBackground: 'rgb(45, 47, 51, 0.5)',
     textPrimary: '#FFFFFF',
     textSecondary: '#C7C7C7',
     border: '#3A3A3A',
