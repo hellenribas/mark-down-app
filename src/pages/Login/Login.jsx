@@ -10,7 +10,12 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const navigation = useNavigate();
+
+  const navigate = useNavigate();
+
+  const handleRegister = () => {
+    navigate('/register')
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,7 +26,7 @@ const Login = () => {
 
       localStorage.setItem('token', token);
 
-      navigation.navigate('/Home')
+      navigate('/Home')
 
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -48,6 +53,7 @@ const Login = () => {
           required 
         />
         <S.Button type="submit">Entrar</S.Button>
+        <S.Button type="button" onClick={handleRegister}>Registrar-se</S.Button>
       </S.LoginForm>
     </S.LoginWrapper>
   );

@@ -48,7 +48,7 @@ export const Button = styled.button`
   font-size: 1em;
   cursor: pointer;
   transition: background 0.3s;
-
+  margin: 3px 0 ;
   &:hover {
     background: ${theme.colors.buttonHover};
   }
