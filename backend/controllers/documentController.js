@@ -2,15 +2,12 @@ const Document = require('../models/Document');
 const { sanitize } = require('../utils/sanitizer'); // Função de sanitização
 const { validationResult } = require('express-validator'); // Para gerenciar erros de validação
 
-// Criar um novo documento
 const createDocument = async (req, res) => {
   const { title, content } = req.body;
 
-  // Sanitização dos dados
   const sanitizedTitle = sanitize(title);
   const sanitizedContent = sanitize(content);
 
-  // Verificar erros de validação
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -26,7 +23,6 @@ const createDocument = async (req, res) => {
   }
 };
 
-// Listar todos os documentos
 const getAllDocuments = async (req, res) => {
   try {
     const documents = await Document.find().select('-__v'); // Exclui o campo __v
@@ -37,7 +33,6 @@ const getAllDocuments = async (req, res) => {
   }
 };
 
-// Obter um documento específico por ID
 const getDocumentById = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id).select('-__v');
@@ -51,15 +46,12 @@ const getDocumentById = async (req, res) => {
   }
 };
 
-// Atualizar um documento existente
 const updateDocument = async (req, res) => {
   const { title, content } = req.body;
 
-  // Sanitização dos dados
   const sanitizedTitle = sanitize(title);
   const sanitizedContent = sanitize(content);
 
-  // Verificar erros de validação
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -82,14 +74,13 @@ const updateDocument = async (req, res) => {
   }
 };
 
-// Excluir um documento
 const deleteDocument = async (req, res) => {
   try {
     const document = await Document.findByIdAndDelete(req.params.id);
     if (!document) {
       return res.status(404).json({ message: 'Documento não encontrado' });
     }
-    res.status(204).send(); // No Content
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: error.message });

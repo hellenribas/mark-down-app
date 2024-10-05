@@ -5,6 +5,8 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const connectDB = require('./config/db');
 const documentRoutes = require('./routes/documentRoute');
+const userRoutes = require('./routes/userRoute');
+const protectedRoutes = require('./routes/protectedRoute');
 const { handleSocket } = require('./utils/socketHandler');
 const errorHandler = require('./middleware/errorHandler');
 const cors = require('cors');
@@ -42,7 +44,10 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+app.use('/api/auth', userRoutes);
+app.use('/api', protectedRoutes);
 app.use('/api/documents', documentRoutes);
+
 
 io.on('connection', (socket) => handleSocket(socket, io));
 

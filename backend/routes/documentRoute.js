@@ -6,9 +6,15 @@ const {
   updateDocument,
   deleteDocument,
 } = require('../controllers/documentController');
+
+const authenticateToken = require('../middleware/authMiddleware');
+
+
 const { check } = require('express-validator');
 
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.post(
   '/',

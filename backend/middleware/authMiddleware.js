@@ -1,18 +1,19 @@
 const jwt = require('jsonwebtoken');
 
-const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1];
+const authenticateToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1]; 
+
   if (!token) {
-    return res.status(401).json({ message: 'Não autorizado, sem token' });
+    return res.sendStatus(401); 
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403); 
+    }
+    req.user = user;
     next();
-  } catch (error) {
-    res.status(401).json({ message: 'Token inválido' });
-  }
+  });
 };
 
-module.exports = authMiddleware;
+module.exports = authenticateToken;
