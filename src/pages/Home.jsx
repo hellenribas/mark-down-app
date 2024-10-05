@@ -1,22 +1,31 @@
-// Home.js
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import BackgroundImage from 'react-background-image';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
+
 
 import * as S from './HomeStyles';
 
 import Header from '../components/Header/Header';
 import Editor from '../components/Editor/Editor';
 import UserIndicators from '../components/UserIndicator/UserIndicator';
+import { generateRandomColor } from '../utils/random';
 
 const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
 
-const Home = () => {  
+const Home = () => {
   const [activeUsers, setActiveUsers] = useState(new Map());
+  const [highlightPositions, setHighlightPositions] = useState({});
+
   const socketRef = useRef(null);
+  
+  
+  const generateId = () => {
+    return uuidv4();
+  };
 
   const handleUserJoined = useCallback((user) => {
-    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.id, user));
+    const color = generateRandomColor();
+    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.id, { ...user, color }));
   }, []);
 
   const handleUserLeft = useCallback((userId) => {
@@ -30,48 +39,34 @@ const Home = () => {
   useEffect(() => {
     socketRef.current = io(socket);
 
-    socketRef.current.emit('joinDocument', { documentId: 'doc123' });
+    socketRef.current.emit('joinDocument', { documentId: 'doc123', userId: generateId() });
 
     socketRef.current.on('activeUsers', (users) => {
       const usersMap = new Map(users.map((user) => [user.id, user]));
       setActiveUsers(usersMap);
     });
 
-    socketRef.current.on('userJoined', handleUserJoined);
-    socketRef.current.on('userLeft', handleUserLeft);
+    socketRef.current.on('documentUpdate', ({ documentId, content, userId, cursorPosition }) => {
+      setHighlightPositions((prevPositions) => ({
+        ...prevPositions,
+        [userId]: cursorPosition,
+      }));
+    });
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('userJoined', handleUserJoined);
-        socketRef.current.off('userLeft', handleUserLeft);
         socketRef.current.disconnect();
       }
     };
   }, [handleUserJoined, handleUserLeft]);
 
-useEffect(() => {
-  socket.on('userJoined', (user) => {
-    setActiveUsers((prevUsers) => [...prevUsers, user]);
-  });
-
-  socket.on('userLeft', (userId) => {
-    setActiveUsers((prevUsers) => prevUsers.filter(user => user.id !== userId));
-  });
-
-  return () => {
-    socket.off('userJoined');
-    socket.off('userLeft');
-  };
-}, []);
-
   return (
-    <S.HomeWrapper 
-  >
+    <S.HomeWrapper>
       <Header />
+        <UserIndicators users={Array.from(activeUsers.values())} />
       <S.Card>
-      <UserIndicators users={Array.from(activeUsers.values())} />
-      <Editor />
-    </S.Card>
+        <Editor documentId="doc123" highlightPositions={highlightPositions} />
+      </S.Card>
     </S.HomeWrapper>
   );
 };

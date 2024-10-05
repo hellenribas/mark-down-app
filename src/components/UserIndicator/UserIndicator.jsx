@@ -1,8 +1,6 @@
 import React from 'react';
 import * as S from './style';
 
-
-
 const UserIndicators = ({ users }) => {
   return (
     <S.UserIndicatorWrapper>

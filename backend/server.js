@@ -36,10 +36,9 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(helmet());
 
-// Limite de requisições por IP
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Limita a 100 requisições por janela de 15 minutos
+  windowMs: 15 * 60 * 1000,
+  max: 100, 
 });
 app.use(limiter);
 

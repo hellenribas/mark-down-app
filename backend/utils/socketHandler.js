@@ -1,31 +1,39 @@
 const Document = require('../models/Document');
 
+const activeUsers = new Map();
+
 const handleSocket = (socket, io) => {
   console.log('Usuário conectado');
 
-  socket.on('joinDocument', async ({ documentId }) => {
+  socket.on('joinDocument', async ({ documentId, userId }) => {
     try {
-      // Usuário entra em uma sala específica para o documento
       socket.join(documentId);
-      console.log(`Usuário entrou na sala do documento ${documentId}`);
+      console.log(`Usuário ${userId} entrou na sala do documento ${documentId}`);
 
-      // Carregar conteúdo inicial do documento e enviar ao cliente que entrou
       const document = await Document.findById(documentId);
+
       if (document) {
         socket.emit('documentUpdate', { documentId, content: document.content });
       }
+
+      if (!activeUsers.has(documentId)) {
+        activeUsers.set(documentId, []);
+      }
+
+      const users = activeUsers.get(documentId);
+      users.push(userId);
+      io.to(documentId).emit('activeUsers', users);
+
     } catch (error) {
       console.error('Erro ao entrar no documento', error);
     }
   });
 
-  socket.on('editDocument', async ({ documentId, content }) => {
+  socket.on('editDocument', async ({ documentId, content, userId, cursorPosition }) => {
     try {
-      // Atualiza o conteúdo do documento no banco de dados
       await Document.updateOne({ _id: documentId }, { content, $inc: { version: 1 } });
 
-      // Envia a atualização para todos os outros usuários na mesma sala
-      io.to(documentId).emit('documentUpdate', { documentId, content });
+      io.to(documentId).emit('documentUpdate', { documentId, content, userId, cursorPosition });
     } catch (error) {
       console.error('Erro ao editar documento', error);
     }
@@ -33,6 +41,12 @@ const handleSocket = (socket, io) => {
 
   socket.on('disconnect', () => {
     console.log('Usuário desconectado');
+  });
+
+  activeUsers.forEach((users, documentId) => {
+    const updatedUsers = users.filter(user => user !== socket.id);
+    activeUsers.set(documentId, updatedUsers);
+    io.to(documentId).emit('activeUsers', updatedUsers);
   });
 };
 

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { theme } from "../../styles/theme";
 
+
 export const EditorContainer = styled.textarea`
   width: 100%;
   height: 400px;
@@ -19,4 +20,35 @@ export const EditorContainer = styled.textarea`
   &:focus {
     box-shadow: ${theme.boxShadow.focus};
   }
+
+  ${(props) => {
+    const highlightStyles = Object.entries(props.highlightPositions || {})
+      .map(([userId, position]) => `
+        &::before {
+          content: '';
+          position: absolute;
+          top: ${position}px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: ${theme.colors.secondary};
+        }
+      `)
+      .join('');
+    return highlightStyles;
+  }}
 `;
+
+export const PreviewContainer = styled.div`
+  margin-top: ${theme.spacing.large};
+  padding: ${theme.spacing.medium};
+  background-color: ${theme.colors.editorBackground};
+  color: ${theme.colors.textPrimary};
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.radius.medium};
+  box-shadow: ${theme.boxShadow.card};
+  white-space: pre-wrap;
+`;
+
+
+export const Button = styled.button``
