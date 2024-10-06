@@ -53,16 +53,19 @@ const Editor = ({ documentId, setActiveUsers }) => {
   };
 
   useEffect(() => {
+    // Emitir o evento para se juntar ao documento
     socket.emit('joinDocument', { documentId, userName: state });
 
+    // Atualizar conteúdo do documento ao receber evento
     socket.on('documentUpdate', ({ content, userName, cursorPosition }) => {
-      setContent(content); 
+      setContent(content); // Atualiza o conteúdo do editor com a nova versão recebida
       setHighlightPositions((prevPositions) => ({
         ...prevPositions,
         [userName]: cursorPosition,
       }));
     });
 
+    // Atualizar usuários ativos
     socket.on('activeUsers', (users) => {
       const usersWithColors = users.map((userName) => ({
         userName,
@@ -72,16 +75,18 @@ const Editor = ({ documentId, setActiveUsers }) => {
       setActiveUsers(usersMap);
     });
 
+    // Remover listeners ao desmontar o componente
     return () => {
       socket.off('documentUpdate');
       socket.off('activeUsers');
-      socket.emit('leaveDocument', { documentId }); 
+      socket.emit('leaveDocument', { documentId }); // Emitir evento ao sair
     };
   }, [documentId, setActiveUsers, state]);
 
   const debouncedEmitChange = debounce((newContent, cursorPosition) => {
     socket.emit('editDocument', { documentId, content: newContent, cursorPosition });
-  }, 150); 
+  }, 150); // Tente reduzir o valor ou remover o debounce para testar
+
   return (
     <>
       <S.EditorContainer
