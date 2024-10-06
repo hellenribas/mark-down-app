@@ -5,7 +5,7 @@ const UserIndicators = ({ users }) => {
   return (
     <S.UserIndicatorWrapper>
       {users.map((user) => (
-        <S.UserIndicator key={user.name} color={user.color} title={user.name} />
+        <S.UserIndicator key={user.userName} color={user.color} title={user.userName} />
       ))}
     </S.UserIndicatorWrapper>
   );

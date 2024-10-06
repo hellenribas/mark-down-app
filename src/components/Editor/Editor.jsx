@@ -9,7 +9,7 @@ import { generateRandomColor } from '../../utils/random';
 
 const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
 
-const Editor = ({ documentId, setActiveUsers }) => {
+const Editor = ({ documentId, setActiveUsers, activeUsers }) => {
   const [content, setContent] = useState('');
   const [history, setHistory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -79,23 +79,32 @@ const Editor = ({ documentId, setActiveUsers }) => {
       socket.emit('leaveDocument', { documentId }); 
     };
   }, [documentId, setActiveUsers, state]);
-  
 
   const debouncedEmitChange = debounce((newContent, cursorPosition) => {
-    socket.emit('editDocument', { documentId, content: newContent, cursorPosition });
-  }, 150); 
+    const userColor = activeUsers.get(state)?.color || '#000';
+    socket.emit('editDocument', { documentId, content: newContent, cursorPosition, color: userColor });
+  }, 150);
 
   return (
     <>
       <S.EditorContainer
         value={content}
         onChange={handleChange}
-        highlightPositions={highlightPositions}
+        highlightPositions={highlightPositions[state]?.color || 'white'} 
       />
       <S.Button onClick={handleUndo} disabled={currentIndex <= 0}>Undo</S.Button>
       <S.Button onClick={handleRedo} disabled={currentIndex >= history.length - 1}>Redo</S.Button>
       <S.PreviewContainer>
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown
+          components={{
+            p: ({ node, ...props }) => {
+              const userColor = highlightPositions[state]?.color || 'white';
+              return <p style={{ color: userColor }} {...props} />;
+            },
+          }}
+        >
+            {content}
+  </ReactMarkdown>
       </S.PreviewContainer>
     </>
   );

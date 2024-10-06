@@ -15,7 +15,7 @@ const Home = () => {
       <Header />
         <UserIndicators users={Array.from(activeUsers.values())} />
       <S.Card>
-        <Editor setActiveUsers={setActiveUsers} documentId="doc123" />
+        <Editor setActiveUsers={setActiveUsers} activeUsers={activeUsers} documentId="doc123" />
       </S.Card>
     </S.HomeWrapper>
   );
