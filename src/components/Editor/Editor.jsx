@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { io } from 'socket.io-client';
 import { debounce } from 'lodash';
 import ReactMarkdown from 'react-markdown'; 
 
 import * as S from './style';
+import { useLocation } from 'react-router-dom';
+import { generateRandomColor } from '../../utils/random';
 
 const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
 
-const Editor = ({ documentId, highlightPositions }) => {
+const Editor = ({ documentId, setActiveUsers }) => {
   const [content, setContent] = useState('');
   const [history, setHistory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [highlightPositions, setHighlightPositions] = useState({});
 
+  const location = useLocation();
+
+  const { state } = location;
 
 
   const addToHistory = (newContent) => {
@@ -50,18 +56,39 @@ const Editor = ({ documentId, highlightPositions }) => {
     debouncedEmitChange(newContent, cursorPosition);
   };
 
+  const handleUserJoined = useCallback((user) => {
+    const color = generateRandomColor();
+    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.userName, { ...user, color }));
+  }, []);
+
+  const handleUserLeft = useCallback((userId) => {
+    setActiveUsers((prevUsers) => {
+      const updatedUsers = new Map(prevUsers);
+      updatedUsers.delete(userId);
+      return updatedUsers;
+    });
+  }, []);
+
 
   useEffect(() => {
-    socket.emit('joinDocument', { documentId });
+    socket.emit('joinDocument', { documentId: 'doc321', userName: `${state}` });
 
-    socket.on('documentUpdate', ({ content }) => {
-      setContent(content);
+    socket.on('activeUsers', (users) => {
+      const usersMap = new Map(users.map((user) => [user.userName, user]));
+      setActiveUsers(usersMap);
+    });
+
+    socket.on('documentUpdate', ({ documentId, content, userName, cursorPosition }) => {
+      setHighlightPositions((prevPositions) => ({
+        ...prevPositions,
+        [userName]: cursorPosition,
+      }));
     });
 
     return () => {
-      socket.off('documentUpdate');
+      socket.off('disconnect');
     };
-  }, [documentId]);
+  }, [documentId, setActiveUsers, state]);
 
   const debouncedEmitChange = debounce((newContent, cursorPosition) => {
     socket.emit('editDocument', { documentId, content: newContent, cursorPosition });

@@ -6,16 +6,16 @@ const handleSocket = (socket, io) => {
   console.log('Usuário conectado');
 
   socket.on('joinDocument', async (data) => {
-    console.log({data})
-    const { documentId, userId } = data
+    console.log({ data });
+    const { documentId, userName } = data;
     try {
       socket.join(documentId);
-      console.log(`Usuário ${userId} entrou na sala do documento ${documentId}`);
+      console.log(`Usuário ${userName} entrou na sala do documento ${documentId}`);
 
       const document = await Document.findById(documentId);
 
       if (document) {
-        socket.emit('documentUpdate', { documentId, content: document.content });
+        socket.emit('documentUpdate', { documentId, content: document.content, userName });
       }
 
       if (!activeUsers.has(documentId)) {
@@ -23,19 +23,18 @@ const handleSocket = (socket, io) => {
       }
 
       const users = activeUsers.get(documentId);
-      users.push(userId);
-      io.to(documentId).emit('activeUsers', users);
-
+      users.push({ userName, socketId: socket.id });
+      io.to(documentId).emit('activeUsers', users.map(user => user.userName));
     } catch (error) {
       console.error('Erro ao entrar no documento', error);
     }
   });
 
-  socket.on('editDocument', async ({ documentId, content, userId, cursorPosition }) => {
+  socket.on('editDocument', async ({ documentId, content, userName, cursorPosition }) => {
     try {
       await Document.updateOne({ _id: documentId }, { content, $inc: { version: 1 } });
 
-      io.to(documentId).emit('documentUpdate', { documentId, content, userId, cursorPosition });
+      io.to(documentId).emit('documentUpdate', { documentId, content, userName, cursorPosition });
     } catch (error) {
       console.error('Erro ao editar documento', error);
     }
@@ -43,12 +42,12 @@ const handleSocket = (socket, io) => {
 
   socket.on('disconnect', () => {
     console.log('Usuário desconectado');
-  });
 
-  activeUsers.forEach((users, documentId) => {
-    const updatedUsers = users.filter(user => user !== socket.id);
-    activeUsers.set(documentId, updatedUsers);
-    io.to(documentId).emit('activeUsers', updatedUsers);
+    activeUsers.forEach((users, documentId) => {
+      const updatedUsers = users.filter(user => user.socketId !== socket.id);
+      activeUsers.set(documentId, updatedUsers);
+      io.to(documentId).emit('activeUsers', updatedUsers.map(user => user.userName));
+    });
   });
 };
 

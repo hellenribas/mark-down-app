@@ -15,54 +15,41 @@ const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
 
 const Home = () => {
   const [activeUsers, setActiveUsers] = useState(new Map());
-  const [highlightPositions, setHighlightPositions] = useState({});
 
   const location = useLocation();
-  const { state } = location;
   const socketRef = useRef(null);
 
-  const handleUserJoined = useCallback((user) => {
-    const color = generateRandomColor();
-    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.userName, { ...user, color }));
-  }, []);
 
-  const handleUserLeft = useCallback((userId) => {
-    setActiveUsers((prevUsers) => {
-      const updatedUsers = new Map(prevUsers);
-      updatedUsers.delete(userId);
-      return updatedUsers;
-    });
-  }, []);
+  // useEffect(() => {
 
-  useEffect(() => {
-    socketRef.current = io(socket);
-    socketRef.current.emit('joinDocument', { documentId: 'doc123', userName: state.userName });
+  //   socketRef.current = io(socket);
+  //   socketRef.current.emit('joinDocument', { documentId: 'doc321', userId: state.userName });
 
-    socketRef.current.on('activeUsers', (users) => {
-      const usersMap = new Map(users.map((user) => [user.userName, user]));
-      setActiveUsers(usersMap);
-    });
+  //   socketRef.current.on('activeUsers', (users) => {
+  //     const usersMap = new Map(users.map((user) => [user.userName, user]));
+  //     setActiveUsers(usersMap);
+  //   });
 
-    socketRef.current.on('documentUpdate', ({ documentId, content, userName, cursorPosition }) => {
-      setHighlightPositions((prevPositions) => ({
-        ...prevPositions,
-        [userName]: cursorPosition,
-      }));
-    });
+  //   socketRef.current.on('documentUpdate', ({ documentId, content, userName, cursorPosition }) => {
+  //     setHighlightPositions((prevPositions) => ({
+  //       ...prevPositions,
+  //       [userName]: cursorPosition,
+  //     }));
+  //   });
 
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, [handleUserJoined, handleUserLeft, state.userName]);
+  //   return () => {
+  //     if (socketRef.current) {
+  //       socketRef.current.disconnect();
+  //     }
+  //   };
+  // }, [handleUserJoined, handleUserLeft, state.userName]);
 
   return (
     <S.HomeWrapper>
       <Header />
         <UserIndicators users={Array.from(activeUsers.values())} />
       <S.Card>
-        <Editor documentId="doc123" highlightPositions={highlightPositions} />
+        <Editor setActiveUsers={setActiveUsers} documentId="doc321" />
       </S.Card>
     </S.HomeWrapper>
   );

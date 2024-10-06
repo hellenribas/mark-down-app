@@ -1,6 +1,6 @@
 const Document = require('../models/Document');
-const { sanitize } = require('../utils/sanitizer'); // Função de sanitização
-const { validationResult } = require('express-validator'); // Para gerenciar erros de validação
+const { sanitize } = require('../utils/sanitizer'); 
+const { validationResult } = require('express-validator');
 
 const createDocument = async (req, res) => {
   const { title, content } = req.body;
@@ -61,7 +61,7 @@ const updateDocument = async (req, res) => {
     const document = await Document.findByIdAndUpdate(
       req.params.id,
       { title: sanitizedTitle, content: sanitizedContent },
-      { new: true, runValidators: true } // Retorna o documento atualizado
+      { new: true, runValidators: true }
     );
 
     if (!document) {
