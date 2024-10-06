@@ -5,7 +5,9 @@ const activeUsers = new Map();
 const handleSocket = (socket, io) => {
   console.log('Usuário conectado');
 
-  socket.on('joinDocument', async ({ documentId, userId }) => {
+  socket.on('joinDocument', async (data) => {
+    console.log({data})
+    const { documentId, userId } = data
     try {
       socket.join(documentId);
       console.log(`Usuário ${userId} entrou na sala do documento ${documentId}`);

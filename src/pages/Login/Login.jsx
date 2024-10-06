@@ -23,10 +23,11 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:4000/api/auth/login', { email, password });
       const { token } = response.data;
-
       localStorage.setItem('token', token);
 
-      navigate('/Home')
+      navigate('/home', {
+        state: response.data.userName
+      })
 
     } catch (error) {
       console.error('Erro ao fazer login:', error);

@@ -9,6 +9,7 @@ import Header from '../components/Header/Header';
 import Editor from '../components/Editor/Editor';
 import UserIndicators from '../components/UserIndicator/UserIndicator';
 import { generateRandomColor } from '../utils/random';
+import { useLocation } from 'react-router-dom';
 
 const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
 
@@ -16,16 +17,13 @@ const Home = () => {
   const [activeUsers, setActiveUsers] = useState(new Map());
   const [highlightPositions, setHighlightPositions] = useState({});
 
+  const location = useLocation();
+  const { state } = location;
   const socketRef = useRef(null);
-  
-  
-  const generateId = () => {
-    return uuidv4();
-  };
 
   const handleUserJoined = useCallback((user) => {
     const color = generateRandomColor();
-    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.id, { ...user, color }));
+    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.userName, { ...user, color }));
   }, []);
 
   const handleUserLeft = useCallback((userId) => {
@@ -38,18 +36,17 @@ const Home = () => {
 
   useEffect(() => {
     socketRef.current = io(socket);
-
-    socketRef.current.emit('joinDocument', { documentId: 'doc123', userId: generateId() });
+    socketRef.current.emit('joinDocument', { documentId: 'doc123', userName: state.userName });
 
     socketRef.current.on('activeUsers', (users) => {
-      const usersMap = new Map(users.map((user) => [user.id, user]));
+      const usersMap = new Map(users.map((user) => [user.userName, user]));
       setActiveUsers(usersMap);
     });
 
-    socketRef.current.on('documentUpdate', ({ documentId, content, userId, cursorPosition }) => {
+    socketRef.current.on('documentUpdate', ({ documentId, content, userName, cursorPosition }) => {
       setHighlightPositions((prevPositions) => ({
         ...prevPositions,
-        [userId]: cursorPosition,
+        [userName]: cursorPosition,
       }));
     });
 
@@ -58,7 +55,7 @@ const Home = () => {
         socketRef.current.disconnect();
       }
     };
-  }, [handleUserJoined, handleUserLeft]);
+  }, [handleUserJoined, handleUserLeft, state.userName]);
 
   return (
     <S.HomeWrapper>
