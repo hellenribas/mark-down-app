@@ -6,6 +6,13 @@ const register = async (req, res) => {
   const { email, password, username } = req.body;
   
   try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      return res.status(400).json({ message: 'Usuário já cadastrado.' });
+    }
+  
+
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({ username, email, password: hashedPassword });
     res.status(201).json({ message: 'Usuário criado com sucesso.' });
