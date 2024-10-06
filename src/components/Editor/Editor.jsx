@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { debounce } from 'lodash';
 import ReactMarkdown from 'react-markdown'; 
@@ -53,39 +53,37 @@ const Editor = ({ documentId, setActiveUsers }) => {
   };
 
   useEffect(() => {
-    // Emitir o evento para se juntar ao documento
     socket.emit('joinDocument', { documentId, userName: state });
-
-    // Atualizar conteúdo do documento ao receber evento
-    socket.on('documentUpdate', ({ content, userName, cursorPosition }) => {
-      setContent(content); // Atualiza o conteúdo do editor com a nova versão recebida
+  
+    socket.on('documentUpdate', ({ content, userName, color }) => {
+      setContent(content); 
       setHighlightPositions((prevPositions) => ({
         ...prevPositions,
-        [userName]: cursorPosition,
+        [userName]: { color },
       }));
     });
-
-    // Atualizar usuários ativos
+  
     socket.on('activeUsers', (users) => {
-      const usersWithColors = users.map((userName) => ({
-        userName,
-        color: generateRandomColor(),
+      const usersWithColors = users.map(user => ({
+        userName: user.userName,
+        color: user.color,
       }));
-      const usersMap = new Map(usersWithColors.map((user) => [user.userName, user]));
+  
+      const usersMap = new Map(usersWithColors.map(user => [user.userName, user]));
       setActiveUsers(usersMap);
     });
-
-    // Remover listeners ao desmontar o componente
+  
     return () => {
       socket.off('documentUpdate');
       socket.off('activeUsers');
-      socket.emit('leaveDocument', { documentId }); // Emitir evento ao sair
+      socket.emit('leaveDocument', { documentId }); 
     };
   }, [documentId, setActiveUsers, state]);
+  
 
   const debouncedEmitChange = debounce((newContent, cursorPosition) => {
     socket.emit('editDocument', { documentId, content: newContent, cursorPosition });
-  }, 150); // Tente reduzir o valor ou remover o debounce para testar
+  }, 150); 
 
   return (
     <>

@@ -5,6 +5,7 @@ export const UserIndicatorWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.small};
+  margin-top: ${theme.spacing.large};
   margin-bottom: ${theme.spacing.medium};
 `;
 

@@ -20,23 +20,6 @@ export const EditorContainer = styled.textarea`
   &:focus {
     box-shadow: ${theme.boxShadow.focus};
   }
-
-  ${(props) => {
-    const highlightStyles = Object.entries(props.highlightPositions || {})
-      .map(([userId, position]) => `
-        &::before {
-          content: '';
-          position: absolute;
-          top: ${position}px;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          background-color: ${theme.colors.secondary};
-        }
-      `)
-      .join('');
-    return highlightStyles;
-  }}
 `;
 
 export const PreviewContainer = styled.div`
