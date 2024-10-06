@@ -6,14 +6,13 @@ const handleSocket = (socket, io) => {
   console.log('Usuário conectado');
 
   socket.on('joinDocument', async (data) => {
-    console.log({ data });
     const { documentId, userName } = data;
+
     try {
       socket.join(documentId);
       console.log(`Usuário ${userName} entrou na sala do documento ${documentId}`);
 
       const document = await Document.findById(documentId);
-
       if (document) {
         socket.emit('documentUpdate', { documentId, content: document.content, userName });
       }
@@ -34,7 +33,7 @@ const handleSocket = (socket, io) => {
     try {
       await Document.updateOne({ _id: documentId }, { content, $inc: { version: 1 } });
 
-      io.to(documentId).emit('documentUpdate', { documentId, content, userName, cursorPosition });
+      socket.broadcast.to(documentId).emit('documentUpdate', { documentId, content, userName, cursorPosition });
     } catch (error) {
       console.error('Erro ao editar documento', error);
     }

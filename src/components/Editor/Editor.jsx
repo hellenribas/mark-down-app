@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
 import { io } from 'socket.io-client';
 import { debounce } from 'lodash';
 import ReactMarkdown from 'react-markdown'; 
@@ -17,9 +16,7 @@ const Editor = ({ documentId, setActiveUsers }) => {
   const [highlightPositions, setHighlightPositions] = useState({});
 
   const location = useLocation();
-
   const { state } = location;
-
 
   const addToHistory = (newContent) => {
     const newHistory = [...history.slice(0, currentIndex + 1), newContent];
@@ -36,7 +33,6 @@ const Editor = ({ documentId, setActiveUsers }) => {
       debouncedEmitChange(previousContent); 
     }
   };
-
 
   const handleRedo = () => {
     if (currentIndex < history.length - 1) {
@@ -56,58 +52,49 @@ const Editor = ({ documentId, setActiveUsers }) => {
     debouncedEmitChange(newContent, cursorPosition);
   };
 
-  const handleUserJoined = useCallback((user) => {
-    const color = generateRandomColor();
-    setActiveUsers((prevUsers) => new Map(prevUsers).set(user.userName, { ...user, color }));
-  }, []);
-
-  const handleUserLeft = useCallback((userId) => {
-    setActiveUsers((prevUsers) => {
-      const updatedUsers = new Map(prevUsers);
-      updatedUsers.delete(userId);
-      return updatedUsers;
-    });
-  }, []);
-
-
   useEffect(() => {
-    socket.emit('joinDocument', { documentId: 'doc321', userName: `${state}` });
+    socket.emit('joinDocument', { documentId, userName: state });
 
-    socket.on('activeUsers', (users) => {
-      const usersMap = new Map(users.map((user) => [user.userName, user]));
-      setActiveUsers(usersMap);
-    });
-
-    socket.on('documentUpdate', ({ documentId, content, userName, cursorPosition }) => {
+    socket.on('documentUpdate', ({ content, userName, cursorPosition }) => {
+      setContent(content); 
       setHighlightPositions((prevPositions) => ({
         ...prevPositions,
         [userName]: cursorPosition,
       }));
     });
 
+    socket.on('activeUsers', (users) => {
+      const usersWithColors = users.map((userName) => ({
+        userName,
+        color: generateRandomColor(),
+      }));
+      const usersMap = new Map(usersWithColors.map((user) => [user.userName, user]));
+      setActiveUsers(usersMap);
+    });
+
     return () => {
-      socket.off('disconnect');
+      socket.off('documentUpdate');
+      socket.off('activeUsers');
+      socket.emit('leaveDocument', { documentId }); 
     };
   }, [documentId, setActiveUsers, state]);
 
   const debouncedEmitChange = debounce((newContent, cursorPosition) => {
     socket.emit('editDocument', { documentId, content: newContent, cursorPosition });
-  }, 300);
-
+  }, 150); 
   return (
     <>
-     <S.EditorContainer
-      value={content}
-      onChange={handleChange}
-      highlightPositions={highlightPositions}
-    />
-          <S.Button onClick={handleUndo} disabled={currentIndex <= 0}>Undo</S.Button>
-          <S.Button onClick={handleRedo} disabled={currentIndex >= history.length - 1}>Redo</S.Button>
-    <S.PreviewContainer>
+      <S.EditorContainer
+        value={content}
+        onChange={handleChange}
+        highlightPositions={highlightPositions}
+      />
+      <S.Button onClick={handleUndo} disabled={currentIndex <= 0}>Undo</S.Button>
+      <S.Button onClick={handleRedo} disabled={currentIndex >= history.length - 1}>Redo</S.Button>
+      <S.PreviewContainer>
         <ReactMarkdown>{content}</ReactMarkdown>
-      </S.PreviewContainer> 
+      </S.PreviewContainer>
     </>
-   
   );
 };
 
