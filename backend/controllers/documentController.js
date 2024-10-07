@@ -18,7 +18,6 @@ const createDocument = async (req, res) => {
     await document.save();
     res.status(201).json(document);
   } catch (error) {
-    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -28,7 +27,6 @@ const getAllDocuments = async (req, res) => {
     const documents = await Document.find().select('-__v'); // Exclui o campo __v
     res.status(200).json(documents);
   } catch (error) {
-    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -41,7 +39,6 @@ const getDocumentById = async (req, res) => {
     }
     res.status(200).json(document);
   } catch (error) {
-    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -69,7 +66,6 @@ const updateDocument = async (req, res) => {
     }
     res.status(200).json(document);
   } catch (error) {
-    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -82,7 +78,6 @@ const deleteDocument = async (req, res) => {
     }
     res.status(204).send();
   } catch (error) {
-    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
