@@ -7,7 +7,7 @@ import * as S from './style';
 import { useLocation } from 'react-router-dom';
 import { generateRandomColor } from '../../utils/random';
 
-const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000');
+const socket = io(process.env.API_URL || 'http://localhost:4000');
 
 const Editor = ({ documentId, setActiveUsers, activeUsers }) => {
   const [content, setContent] = useState('');
