@@ -16,7 +16,7 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = ['https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app'];
+const allowedOrigins = ['https://mark-down-front.vercel.app/'];
 
 app.use(cors({
   origin: allowedOrigins, 
