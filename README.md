@@ -121,8 +121,6 @@ Você pode experimentar a aplicação em funcionamento acessando o seguinte link
 
 Na demonstração, você poderá:
 
-- Criar um novo documento.
-- Editar documentos existentes.
 - Colaborar em tempo real com outros usuários.
 - Testar a funcionalidade de autenticação com registro e login.
 
