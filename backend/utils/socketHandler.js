@@ -1,4 +1,4 @@
-const { stringToColor } = require('../../src/utils/random');
+const { stringToColor } = require('./formats');
 const Document = require('../models/Document');
 
 const activeUsers = new Map();
