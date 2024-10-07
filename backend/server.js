@@ -15,7 +15,7 @@ require('dotenv').config();
 connectDB();
 
 const app = express();
-const allowedOrigins = 'https://mark-down-app-d86v.vercel.app'
+const allowedOrigins = 'https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app/'
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
