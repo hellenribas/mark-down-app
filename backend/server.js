@@ -15,7 +15,9 @@ require('dotenv').config();
 connectDB();
 
 const app = express();
-const allowedOrigins = 'https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app/'
+const server = http.createServer(app);
+const allowedOrigins = 'https://mark-down-app-d86v.vercel.app';
+
 app.use(cors({
   origin: allowedOrigins, 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -23,12 +25,12 @@ app.use(cors({
   credentials: true,
 }));
 
-const io = new Server(http.createServer(app), {
+const io = new Server(server, {
   cors: {
-     origin: allowedOrigins,
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
-    credentials: true
+    credentials: true,
   },
 });
 
@@ -37,21 +39,16 @@ app.use(helmet());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, 
+  max: 100,
 });
 app.use(limiter);
 
 app.use('/api/auth', userRoutes);
-// app.use('/api', protectedRoutes);
 app.use('/api/documents', documentRoutes);
 
 io.on('connection', (socket) => handleSocket(socket, io));
 
 app.use(errorHandler);
-
-// server.listen(4000, () => {
-//   console.log('Servidor rodando na porta 4000');
-// });
 
 module.exports = (req, res) => {
   if (req.method === 'OPTIONS') {
@@ -60,3 +57,9 @@ module.exports = (req, res) => {
   }
   app(req, res); 
 };
+
+if (process.env.NODE_ENV !== 'production') {
+  server.listen(4000, () => {
+    console.log('Servidor rodando na porta 4000');
+  });
+}
