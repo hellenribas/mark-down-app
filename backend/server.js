@@ -16,7 +16,7 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = 'https://mark-down-app-d86v.vercel.app';
+const allowedOrigins = 'https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app';
 
 app.use(cors({
   origin: allowedOrigins, 
@@ -36,11 +36,6 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(helmet());
-
-app.use((req, res, next) => {
-  console.log('Origem:', req.headers.origin);
-  next();
-});
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

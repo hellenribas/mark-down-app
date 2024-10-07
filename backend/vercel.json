@@ -11,6 +11,22 @@
         "src": "/api/(.*)",
         "dest": "/server.js"
       }
-    ]
+    ],
+      "headers": [
+        {
+          "source": "/socket.io/(.*)",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "GET,POST,PUT,DELETE"
+            }
+          ]
+        }
+      ]
+        
   }
   
