@@ -49,6 +49,10 @@ io.on('connection', (socket) => handleSocket(socket, io));
 
 app.use(errorHandler);
 
+// server.listen(4000, () => {
+//   console.log('Servidor rodando na porta 4000');
+// });
+
 module.exports = (req, res) => {
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
