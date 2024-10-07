@@ -17,7 +17,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: 'https://mark-down-app-d86v.vercel.app/', 
+  origin: 'https://mark-down-app-d86v.vercel.app', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
@@ -25,7 +25,7 @@ app.use(cors({
 
 const io = new Server(http.createServer(app), {
   cors: {
-    origin: 'https://mark-down-app-d86v.vercel.app/',
+    origin: 'https://mark-down-app-d86v.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true
