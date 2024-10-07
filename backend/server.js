@@ -56,7 +56,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use('/api/auth', userRoutes);
-app.use('/api', protectedRoutes);
+// app.use('/api', protectedRoutes);
 app.use('/api/documents', documentRoutes);
 
 io.on('connection', (socket) => handleSocket(socket, io));
