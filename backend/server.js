@@ -10,14 +10,11 @@ const protectedRoutes = require('./routes/protectedRoute');
 const { handleSocket } = require('./utils/socketHandler');
 const errorHandler = require('./middleware/errorHandler');
 const cors = require('cors');
-
-
 require('dotenv').config();
 
 connectDB();
 
 const app = express();
-const server = http.createServer(app);
 
 app.use(cors({
   origin: '*', 
@@ -26,7 +23,7 @@ app.use(cors({
   credentials: true,
 }));
 
-const io = new Server(server, {
+const io = new Server(http.createServer(app), {
   cors: {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -48,13 +45,14 @@ app.use('/api/auth', userRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/documents', documentRoutes);
 
-
 io.on('connection', (socket) => handleSocket(socket, io));
 
 app.use(errorHandler);
 
-server.listen(4000, () => {
-  console.log('Servidor rodando na porta 4000');
-});
-
-module.exports = app
+module.exports = (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  app(req, res); 
+};
