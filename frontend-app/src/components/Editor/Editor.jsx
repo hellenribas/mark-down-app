@@ -7,7 +7,7 @@ import * as S from './style';
 import { useLocation } from 'react-router-dom';
 import { generateRandomColor } from '../../utils/random';
 
-const socket = io('mark-down-backend.vercel.app/');
+const socket = io('https://mark-down-backend.vercel.app/');
 
 const Editor = ({ documentId, setActiveUsers, activeUsers }) => {
   const [content, setContent] = useState('');
