@@ -113,6 +113,21 @@ Este é um editor colaborativo de Markdown que permite que múltiplos usuários 
 - **Rate Limiting**: Uso de **express-rate-limit** para limitar requisições e evitar ataques DoS.
 - **Sanitização**: Uso de **express-validator** e **validator** para validar e sanitizar inputs de usuários.
 
+## Demonstração
+
+Você pode experimentar a aplicação em funcionamento acessando o seguinte link:
+
+[**Demonstração do Editor Colaborativo de Markdown**](https://seu-link-da-demonstração.com)
+
+Na demonstração, você poderá:
+
+- Criar um novo documento.
+- Editar documentos existentes.
+- Colaborar em tempo real com outros usuários.
+- Testar a funcionalidade de autenticação com registro e login.
+
+Sinta-se à vontade para explorar todas as funcionalidades e verificar como a aplicação pode atender às suas necessidades!
+
 ## Considerações Finais
 
 Este projeto visa proporcionar um ambiente colaborativo de edição em tempo real, com foco em aprendizado e prototipação. No futuro, seria interessante integrar uma melhor gestão de permissões, uma UI/UX mais robusta e melhorias no sistema de segurança.
