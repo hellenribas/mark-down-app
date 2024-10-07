@@ -17,14 +17,7 @@ connectDB();
 const app = express();
 const allowedOrigins = 'https://mark-down-app-d86v-git-master-donation-apis-projects.vercel.app/'
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'Ocorreu um erro CORS';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }, 
+  origin: allowedOrigins, 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
@@ -32,14 +25,7 @@ app.use(cors({
 
 const io = new Server(http.createServer(app), {
   cors: {
-     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'Ocorreu um erro CORS';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
+     origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true
