@@ -15,9 +15,16 @@ require('dotenv').config();
 connectDB();
 
 const app = express();
-
+const allowedOrigins = 'https://mark-down-app-d86v.vercel.app'
 app.use(cors({
-  origin: 'https://mark-down-app-d86v.vercel.app', 
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'Ocorreu um erro CORS';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }, 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
@@ -25,7 +32,14 @@ app.use(cors({
 
 const io = new Server(http.createServer(app), {
   cors: {
-    origin: 'https://mark-down-app-d86v.vercel.app',
+     origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = 'Ocorreu um erro CORS';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true
