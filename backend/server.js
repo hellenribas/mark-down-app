@@ -37,6 +37,11 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(helmet());
 
+app.use((req, res, next) => {
+  console.log('Origem:', req.headers.origin);
+  next();
+});
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
