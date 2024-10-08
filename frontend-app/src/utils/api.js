@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://mark-down-backend.vercel.app/';
+const API_URL = 'https://server-markdown.vercel.app/';
 
 export const fetchAllDocuments = async () => {
   try {
