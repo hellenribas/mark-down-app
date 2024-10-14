@@ -17,7 +17,7 @@ const Register = () => {
       e.preventDefault();
   
       try {
-        const response = await axios.post('https://server-markdown.vercel.app/api/auth/register', {
+        const response = await axios.post('https://markdown-server-app.vercel.appapi/auth/register', {
           username,
           email,
           password,

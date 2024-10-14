@@ -21,7 +21,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://server-markdown.vercel.app/api/auth/login', ({ email, password }));
+      const response = await axios.post('https://markdown-server-app.vercel.appapi/auth/login', ({ email, password }));
       const { token } = response.data;
       localStorage.setItem('token', token);
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://server-markdown.vercel.app/api/auth';
+const API_URL = 'https://markdown-server-app.vercel.appapi/auth';
 
 export const loginUser = async ({ email, password }) => {
   try {
